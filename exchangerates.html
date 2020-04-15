@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Exchange Rates<h1>
+            <h2>Live Rates To Buy/Sell The Ghanaian Cedi</h2>
+                <form action="/exchangerates" method="POST">
+                        <label>How much you wish to send :</label>
+                        <input type="number" name="conversion"> </br>
+                        <input type="submit" name="form" value="Submit">
+                </form>
+                <table style="width:100%">
+                  <tr>
+                    <th>Currency</th>
+                    <th>Abbreviation</th>
+                    <th>Conversion</th>
+                  </tr>
+                  <tr>
+                    <td>Algerian dinar</td>
+                    <td>DZD</td>
+                    <td>{{ output }}</td>
+                  </tr>
+                    <tr>
+                    <td>Egyptian pound</td>
+                    <td>EGP</td>
+                    <td>{{ output_6 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Nigerian naira</td>
+                    <td>NGN</td>
+                    <td>{{ output_2 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Rwandan franc</td>
+                    <td>RWF</td>
+                    <td>{{ output_1 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Sierra Leonean leone</td>
+                    <td>SLL</td>
+                    <td>{{ output_3 }}</td>
+                  </tr>
+                  <tr>
+                    <td>South African rand</td>
+                    <td>ZAR</td>
+                    <td>{{ output_8 }}</td>
+                  </tr>
+                  <tr>
+                    <td>West African CFA franc</td>
+                    <td>XOF</td>
+                    <td>{{ output_4 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Central African CFA fran</td>
+                    <td>XAF</td>
+                    <td>{{ output_5 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Congolese franc</td>
+                    <td>CDF</td>
+                    <td>{{ output_9 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Somali shilling</td>
+                    <td>SOS</td>
+                    <td>{{ output_7 }}</td>
+                  </tr>
+                </table>
+
+{% endblock content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   {% if title %}
+        <title>Horizon - {{title}}</title>
+    {% else %}
+        <title>Horizon</title>
+    {% endif %}
+</head>
+<body>
+
+</body>
+</html>
