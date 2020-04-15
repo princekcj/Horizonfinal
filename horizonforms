@@ -1,0 +1,47 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from Horizon.models import User, Transaction
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Username',
+                           validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Sign Up')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('That username is taken. Please choose a another one')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('That email is taken. Please choose a another one')
+
+
+class LoginForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Login')
+
+class TransferForm(FlaskForm):
+    currency = SelectField(u'Currency You Wish To Send - Please Enter Currency Code:', choices=[('GHS_DZD','Algerian dinar'), ('GHS_XOF', 'West African CFA franc'), ('GHS_CDF', 'Congolese franc'), ('GHS_EGP', 'Egyptian pound'), ('GHS', 'Ghanaian cedi'), ('GHS_NGN', 'Nigerian naira'), ('GHS_RWF', 'Rwandan franc'), ('GHS_SLL', 'Sierra Leonean leone'), ('GHS_SOS', 'Somali shilling'), ('GHS_ZAR', 'South African rand')], validators=[DataRequired()])
+    amount = IntegerField('Amount', validators=[DataRequired()])
+    receiving_username = StringField('Username of Account You Wish To Send To', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Send Money')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=receiving_username.data).first()
+        if user:
+            pass
+        else:
+            raise ValidationError('That username is not found. Unable to transfer without valid username')
