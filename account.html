@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{ current_user.username }}<h1>
+{% endblock content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   {% if title %}
+        <title>Horizon - {{title}}</title>
+    {% else %}
+        <title>Horizon</title>
+    {% endif %}
+</head>
+<body>
+
+</body>
+</html>
