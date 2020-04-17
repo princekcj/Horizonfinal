@@ -99,7 +99,8 @@ def transfermoney():
             transactions = Transaction(username=current_user.username, receiving_username=form.receiving_username.data, amount=form.amount.data, currency=form.currency.data, Transactor=current_user)
             db.session.add(transactions)
             db.session.commit()
-            return redirect(url_for('exchangerates'))
+            flash ('Transfer Successful')
+            return redirect(url_for('transfermoney'))
         else:
             flash('Transfer Unsuccessful. Please check password', 'danger')
     return render_template('transfermoney.html', title='Transfer Money', form=form)
