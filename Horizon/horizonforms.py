@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from Horizon.models import User, Transaction
+from flask_login import current_user
 
 
 class RegistrationForm(FlaskForm):
