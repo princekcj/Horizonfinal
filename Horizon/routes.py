@@ -29,7 +29,7 @@ def home():
 
 @app.route("/about")
 def about():
-    return render_template('about.html', title='About')
+    return render_template('about.html', title='About', posts=posts)
 
 @app.route("/exchangerates", methods=['GET', 'POST'])
 def exchangerates():
