@@ -177,6 +177,7 @@ def reset_token(token):
     return render_template('reset_token.html', title='Reset Password', form= form)
     
 @app.route("/wallet")
+@login_required
 def wallet():
     return render_template('wallet.html', title='Wallet')    
    
