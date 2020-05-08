@@ -13,7 +13,9 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    transactions = db.relationship('Transaction', backref='Transactor', lazy=True)
+    account_balance = db.Column(db.Integer, nullable=False)
+    transactions = db.relationship('Transaction', primaryjoin="and_(User.id==Transaction.from_user_id, User.id==Transaction.receiving_user_id)", lazy=True)
+
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -29,16 +31,23 @@ class User(db.Model, UserMixin):
         return User.query.get(user_id)
 
 
-    def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
-class Transaction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False)
-    amount = db.Column(db.Integer, nullable=False)
-    currency = db.Column(db.String, nullable=False)
-    receiving_username = db.Column(db.String, nullable=False)
-    date_sent = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-       return f"Transaction('{self.username}', '{self.amount}','{self.currency}', '{self.receiving_username}', '{self.date_sent})"
+        return f"User('{self.username}', '{self.email}', '{self.account_balance})"
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    from_username = db.relationship('User', backref=db.backref('sent_transactions', uselist=False, lazy='joined'),
+        foreign_keys=[from_user_id])
+
+    receiving_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    receiving_username = db.relationship('User', backref=db.backref('received_transactions', uselist=False, lazy='joined'), foreign_keys=[receiving_user_id])
+    amount = db.Column(db.Integer, nullable=False)
+    currency = db.Column(db.String, nullable=False)
+    date_sent = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+       return f"Transaction('{self.from_username}', '{self.amount}','{self.currency}', '{self.receiving_username}', '{self.date_sent})"
+
+
