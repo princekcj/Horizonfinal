@@ -98,8 +98,14 @@ def transfermoney():
     form = TransferForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=current_user.username).first()
+        user_2 = User.query.filter_by(username=form.receiving_username.data).first()
         if bcrypt.check_password_hash(user.password, form.password.data):
-            transactions = Transaction(username=current_user.username, receiving_username=form.receiving_username.data, amount=form.amount.data, currency=form.currency.data, Transactor=current_user)
+            transactions = Transaction(from_user_id=current_user.id, receiving_user_id=user_2.id, amount=form.amount.data, currency=form.currency.data)
+            if current_user.account_balance < transactions.amount:
+                flash('Insufficient Funds')
+            else:
+                current_user.account_balance -= transactions.amount
+                user_2.account_balance += transactions.amount
             db.session.add(transactions)
             db.session.commit()
             flash('Transfer Successful')
@@ -169,3 +175,8 @@ def reset_token(token):
         flash('The password has been updated! You may log in now', 'success')
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form= form)
+    
+@app.route("/wallet")
+def wallet():
+    return render_template('wallet.html', title='Wallet')    
+   
