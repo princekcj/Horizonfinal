@@ -1,5 +1,5 @@
 from flask import render_template, url_for, flash, redirect, request
-from Horizon.horizonforms import RegistrationForm, LoginForm, TransferForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
+from Horizon.horizonforms import RegistrationForm, LoginForm, TransferForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, TopUpForm
 from urllib.request import urlopen
 from Horizon import db, app, bcrypt, mail
 from Horizon.models import User, Transaction
@@ -68,7 +68,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password, account_balance=500)
         db.session.add(user)
         db.session.commit()
         flash(f'Account created for {form.username.data}! You may log in now', 'success')
@@ -175,9 +175,25 @@ def reset_token(token):
         flash('The password has been updated! You may log in now', 'success')
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form= form)
-    
+
 @app.route("/wallet")
 @login_required
 def wallet():
-    return render_template('wallet.html', title='Wallet')    
-   
+    return render_template('wallet.html', title='Wallet')
+
+@app.route("/topup", methods=['GET', 'POST'])
+@login_required
+def topup():
+    form = TopUpForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=current_user.username).first()
+        if bcrypt.check_password_hash(user.password, form.password.data):
+             addition = int(form.amount.data)
+             current_user.account_balance += addition
+             db.session.commit()
+             flash('Top Up Successful', 'success')
+             return redirect(url_for('wallet'))
+        else:
+            flash('Top Up Unsuccessful. Please check password', 'danger')
+    return render_template('topup.html', title='Top Up Wallet', form=form)
+
